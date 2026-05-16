@@ -39,6 +39,3 @@ export function validateParams(...paramNames: string[]): RequestHandler {
  * Окремі middleware для частих випадків
  */
 export const validateId = validateParams('id')
-export const validateTopicId = validateParams('topicId')
-export const validateQuizId = validateParams('quizId')
-export const validateTopicAndId = validateParams('topicId', 'id')

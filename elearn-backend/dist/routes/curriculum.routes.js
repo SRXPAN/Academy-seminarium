@@ -1,0 +1,12 @@
+import { Router } from 'express';
+import { requireAuth, requireRole } from '../middleware/auth.js';
+import { asyncHandler } from '../middleware/errorHandler.js';
+import { validateResource } from '../middleware/validateResource.js';
+import { createLecture as createLectureSchema, createSection as createSectionSchema, courseIdPathParam, sectionIdParam } from '@elearn/shared';
+import { createLecture, createSection } from '../controllers/curriculum.controller.js';
+const router = Router();
+router.use(requireAuth);
+router.use(requireRole(['INSTRUCTOR', 'ADMIN']));
+router.post('/courses/:courseId/sections', validateResource(createSectionSchema, 'body'), validateResource(courseIdPathParam, 'params'), asyncHandler(createSection));
+router.post('/sections/:sectionId/lectures', validateResource(createLectureSchema, 'body'), validateResource(sectionIdParam, 'params'), asyncHandler(createLecture));
+export default router;

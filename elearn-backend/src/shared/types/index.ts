@@ -20,7 +20,7 @@ export interface LocalizedObject {
 // USER & AUTH TYPES
 // ============================================
 
-export type Role = 'ADMIN' | 'EDITOR' | 'STUDENT'
+export type Role = 'ADMIN' | 'EDITOR' | 'INSTRUCTOR' | 'STUDENT'
 
 export interface User {
   id: string
@@ -48,15 +48,6 @@ export interface AuthResponse {
   user: User
 }
 
-// ============================================
-// TOPIC & MATERIAL TYPES
-// ============================================
-
-export type Category = 'Programming' | 'Mathematics' | 'Databases' | 'Networks' | 'WebDevelopment' | 'MobileDevelopment' | 'MachineLearning' | 'Security' | 'DevOps' | 'OperatingSystems'
-export type MaterialType = 'pdf' | 'video' | 'link' | 'text'
-export type Lang = 'UA' | 'PL' | 'EN'
-export type Status = 'Draft' | 'Published'
-export type Difficulty = 'Easy' | 'Medium' | 'Hard'
 
 export interface Material {
   id: string
@@ -72,84 +63,12 @@ export interface Material {
   tags?: string[]
 }
 
-export interface QuizLite {
-  id: string
-  title: string
-  titleJson?: LocalizedString
-  durationSec: number
-  status?: Status
-}
+export type MaterialType = 'VIDEO' | 'ARTICLE' | 'PDF' | 'OTHER'
 
-export interface TopicLite {
-  id: string
-  name: string
-  nameJson?: LocalizedString
-  quizzes: QuizLite[]
-}
-
-export interface TopicTree {
-  id: string
-  slug: string
-  name: string
-  nameJson?: LocalizedString
-  description?: string
-  descJson?: LocalizedString
-  category?: Category
-  status?: Status
-  materials: Material[]
-  quizzes: QuizLite[]
-  children?: TopicTree[]
-}
-
-// ============================================
-// QUIZ TYPES
-// ============================================
-
-export interface Option {
-  id: string
-  text: string
-  textJson?: LocalizedString
-  correct?: boolean // Only sent to editors/admins
-}
-
-export interface Question {
-  id: string
-  text: string
-  textJson?: LocalizedString
-  explanation?: string
-  explanationJson?: LocalizedString
-  options: Option[]
-  tags: string[]
-  difficulty: Difficulty
-}
-
-export interface Quiz {
-  id: string
-  title: string
-  titleJson?: LocalizedString
-  durationSec: number
-  topicId: string
-  status?: Status
-  token?: string
-  questions: Question[]
-}
-
-export interface QuizAnswer {
-  questionId: string
-  optionId: string
-}
-
-export interface QuizSubmitRequest {
-  answers: QuizAnswer[]
-}
-
-export interface QuizSubmitResult {
-  correct: number
-  total: number
-  xpEarned: number
-  correctMap?: Record<string, string>
-  solutions?: Record<string, string>
-}
+export type Lang = 'UA' | 'PL' | 'EN'
+export type Category = 'PROGRAMMING' | 'DESIGN' | 'MARKETING' | 'BUSINESS' | 'LANGUAGE' | 'OTHER'
+export type Status = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED'
+export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD'
 
 // ============================================
 // ACTIVITY TYPES
@@ -220,55 +139,11 @@ export function getTranslation(
 // EDITOR TYPES
 // ============================================
 
-export interface CreateTopicRequest {
+export interface EditorFile {
+  id: string
   name: string
-  slug: string
-  description?: string
-  parentId?: string
-  category?: Category
-}
+  content: string
 
-export interface UpdateTopicRequest {
-  name?: string
-  slug?: string
-  description?: string
-  parentId?: string | null
-  category?: Category
-  publish?: boolean
-}
-
-export interface CreateMaterialRequest {
-  title: string
-  type: MaterialType
-  url?: string
-  content?: string
-  lang?: Lang
-  publish?: boolean
-}
-
-export interface UpdateMaterialRequest {
-  title?: string
-  type?: MaterialType
-  url?: string
-  content?: string
-  lang?: Lang
-  publish?: boolean
-  status?: Status
-}
-
-export interface CreateQuizRequest {
-  title: string
-  durationSec?: number
-  publish?: boolean
-}
-
-export interface CreateQuestionRequest {
-  text: string
-  explanation?: string
-  difficulty?: Difficulty
-  tags?: string[]
-  options: Array<{ text: string; correct: boolean }>
-}
 
 // ============================================
 // VALIDATION CONSTANTS

@@ -18,7 +18,7 @@
     "forceConsistentCasingInFileNames": false,
     "paths": {
       "@/*": ["./src/*"],
-      "@packages/shared": ["./src/shared/index.ts"]
+      "@packages/shared": ["../packages/shared/src/index.ts"]
     },
     "types": ["vite/client", "node"]
   },

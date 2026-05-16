@@ -19,21 +19,20 @@ import { logger } from './utils/logger.js'
 import { prisma } from './db.js'
 
 // Import Routes
-import authRouter from './routes/auth.js'
-import quizRouter from './routes/quiz.js'
-import editorRouter from './routes/editor.js'
-import topicsRouter from './routes/topics.js'
-import lessonsRouter from './routes/lessons.js'
-import progressRouter from './routes/progress.js'
-import filesRouter from './routes/files.js'
-import adminRouter from './routes/admin.js'
+import curriculumRouter from './routes/curriculum.routes.js'
+import coursesRouter from './routes/courses.routes.js'
+import paymentsRouter from './routes/payments.routes.js'
 import i18nRouter from './routes/i18n.js'
-import dashboardRouter from './routes/dashboard.js'
-import activityRouter from './routes/activity.js'
+import progressRouter from './routes/progress.routes.js'
+import reviewsRouter from './routes/reviews.routes.js'
+
+// Import Handlers
+import { stripeWebhookHandler } from './controllers/payments.controller.js'
+import { asyncHandler } from './middleware/errorHandler.js'
 
 // Import Middleware
-import { generalLimiter, authLimiter } from './middleware/rateLimit.js'
-import { validateCsrf, setCsrfToken } from './middleware/csrf.js'
+import { generalLimiter } from './middleware/rateLimit.js'
+import { validateCsrf } from './middleware/csrf.js'
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js'
 
 const app = express()
@@ -91,6 +90,9 @@ app.use(cors({
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'))
 app.use(cookieParser())
 
+// --- Stripe Webhook (MUST be before express.json()) ---
+app.post('/api/payments/webhook', express.raw({ type: 'application/json' }), asyncHandler(stripeWebhookHandler))
+
 // --- Body Parser ---
 app.use(express.json({ limit: '1mb' }))
 
@@ -101,30 +103,11 @@ app.options('*', cors())
 
 // --- CSRF Protection (Mutating methods only) ---
 // Stateless CSRF validation - works across multiple instances
-// Skip for auth endpoints that don't require session (login, register, password reset)
-const CSRF_EXEMPT_PATHS = [
-  '/auth/login',
-  '/auth/register', 
-  '/auth/refresh',
-  '/auth/logout',      // Logout is safe to exempt - it only clears session
-  '/auth/logout-all',  // Same for logout all devices
-  '/auth/forgot-password',
-  '/auth/reset-password',
-  '/auth/verify-email',
-  '/auth/resend-verification',
-]
-
 app.use('/api', (req, res, next) => {
   const mutatingMethods = ['POST', 'PUT', 'PATCH', 'DELETE']
   
   // Skip CSRF for safe methods
   if (!mutatingMethods.includes(req.method)) {
-    return next()
-  }
-  
-  // Skip CSRF for exempt paths (pre-auth endpoints)
-  // Note: req.path here is relative to /api mount point (e.g., /auth/login not /api/auth/login)
-  if (CSRF_EXEMPT_PATHS.includes(req.path)) {
     return next()
   }
   
@@ -137,22 +120,13 @@ app.use('/api', generalLimiter)
 // --- Healthcheck ---
 app.get('/api/health', (_req, res) => res.json({ ok: true }))
 
-// --- CSRF Token endpoint (before auth limiter) ---
-// This endpoint is called frequently, so it should not be under strict auth limiter
-app.get('/api/auth/csrf', setCsrfToken)
-
 // --- Routes ---
-app.use('/api/auth', authLimiter, authRouter)
-app.use('/api/topics', topicsRouter)
-app.use('/api/lessons', lessonsRouter)
-app.use('/api/quiz', quizRouter)
-app.use('/api/editor', editorRouter)
-app.use('/api/progress', progressRouter)
-app.use('/api/files', filesRouter)
-app.use('/api/admin', adminRouter)
+app.use('/api', curriculumRouter)
+app.use('/api/courses', coursesRouter)
+app.use('/api/payments', paymentsRouter)
 app.use('/api/i18n', i18nRouter)
-app.use('/api/dashboard', dashboardRouter)
-app.use('/api/activity', activityRouter)
+app.use('/api/progress', progressRouter)
+app.use('/api/reviews', reviewsRouter)
 
 // --- Error Handling (MUST be last) ---
 app.use(notFoundHandler) // 404 Handler

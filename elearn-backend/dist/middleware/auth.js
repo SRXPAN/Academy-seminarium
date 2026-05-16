@@ -35,15 +35,14 @@ export async function requireAuth(req, res, next) {
         }
         const userExists = await prisma.user.findUnique({
             where: { id: decoded.id },
-            select: { id: true, role: true, emailVerified: true }
+            select: { id: true, role: true }
         });
         if (!userExists) {
             return sendError(res, ErrorCodes.UNAUTHORIZED, 'User no longer exists', 401);
         }
         req.user = {
             ...decoded,
-            role: userExists.role,
-            emailVerified: userExists.emailVerified
+            role: userExists.role
         };
         logger.info('[AUTH] Success', { userId: decoded.id, email: decoded.email });
         next();
@@ -87,7 +86,7 @@ export function requireRole(roles) {
  * Перевіряє що email верифіковано
  */
 export function requireVerifiedEmail(req, res, next) {
-    if (!req.user?.emailVerified) {
+    if (req.user?.emailVerified === false) {
         return sendError(res, ErrorCodes.FORBIDDEN, 'Email not verified', 403);
     }
     next();

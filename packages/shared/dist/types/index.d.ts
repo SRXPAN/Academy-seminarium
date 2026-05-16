@@ -8,7 +8,7 @@ export interface LocalizedObject {
     PL: string;
     EN: string;
 }
-export type Role = 'ADMIN' | 'EDITOR' | 'STUDENT';
+export type Role = 'ADMIN' | 'EDITOR' | 'INSTRUCTOR' | 'STUDENT';
 export interface User {
     id: string;
     name: string;

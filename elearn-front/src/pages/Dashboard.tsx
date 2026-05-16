@@ -10,7 +10,7 @@ import { useTranslation } from '@/i18n/useTranslation'
 import { useActivityTracker } from '@/hooks/useActivityTracker'
 import { apiGet, apiPost } from '@/lib/http'
 import { SkeletonDashboard } from '@/components/Skeletons'
-import QuizHistory from '@/components/QuizHistory'
+// import QuizHistory from '@/components/QuizHistory' // Removed as per Sprint 5 requirements
 import { 
   ProgressBar, 
   StatCard, 
@@ -473,7 +473,7 @@ export default function Dashboard() {
           </div>
 
           {/* 7. Recent History */}
-          <QuizHistory />
+          {/* <QuizHistory /> */}
 
         </div>
       </div>

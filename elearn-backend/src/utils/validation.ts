@@ -134,11 +134,3 @@ export function safeParse<T>(schema: z.ZodSchema<T>, data: unknown): { success: 
 export const paramsWithId = z.object({
   id: cuidSchema,
 })
-
-export const paramsWithTopicId = z.object({
-  topicId: cuidSchema,
-})
-
-export const paramsWithQuizId = z.object({
-  quizId: cuidSchema,
-})

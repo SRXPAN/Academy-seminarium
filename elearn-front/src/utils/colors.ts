@@ -27,3 +27,8 @@ export function getGradientColor(
 ): GradientColor {
   return colors[index % colors.length]
 }
+
+/** Simple class name merger */
+export function cn(...classes: (string | boolean | undefined | null)[]) {
+  return classes.filter(Boolean).join(' ')
+}

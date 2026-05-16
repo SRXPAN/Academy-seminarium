@@ -12,7 +12,6 @@ export interface JwtPayload {
   name: string
   email: string
   type?: 'access' | 'refresh'
-  emailVerified?: boolean
 }
 
 declare global {
@@ -54,7 +53,7 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
     }
     const userExists = await prisma.user.findUnique({
       where: { id: decoded.id },
-      select: { id: true, role: true, emailVerified: true }
+      select: { id: true, role: true }
     })
     
     if (!userExists) {
@@ -63,8 +62,7 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
     
     req.user = { 
       ...decoded, 
-      role: userExists.role as Role,
-      emailVerified: userExists.emailVerified 
+      role: userExists.role as Role
     }
     logger.info('[AUTH] Success', { userId: decoded.id, email: decoded.email })
     next()
@@ -107,7 +105,7 @@ export function requireRole(roles: Role[]) {
  * Перевіряє що email верифіковано
  */
 export function requireVerifiedEmail(req: Request, res: Response, next: NextFunction) {
-  if (!req.user?.emailVerified) {
+  if ((req.user as { emailVerified?: boolean } | undefined)?.emailVerified === false) {
     return sendError(res, ErrorCodes.FORBIDDEN, 'Email not verified', 403)
   }
   next()

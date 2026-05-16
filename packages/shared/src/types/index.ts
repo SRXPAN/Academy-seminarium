@@ -20,7 +20,7 @@ export interface LocalizedObject {
 // USER & AUTH TYPES
 // ============================================
 
-export type Role = 'ADMIN' | 'EDITOR' | 'STUDENT'
+export type Role = 'ADMIN' | 'EDITOR' | 'INSTRUCTOR' | 'STUDENT'
 
 export interface User {
   id: string

@@ -81,7 +81,7 @@ export const statusSchema = z.enum(['ACTIVE', 'INACTIVE', 'ARCHIVED']);
 /**
  * Role enum
  */
-export const roleSchema = z.enum(['STUDENT', 'EDITOR', 'ADMIN']);
+export const roleSchema = z.enum(['STUDENT', 'EDITOR', 'INSTRUCTOR', 'ADMIN']);
 /**
  * Common schemas object
  */

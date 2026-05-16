@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 import { Routes, Route, NavLink, useNavigate, useLocation } from 'react-router-dom'
-import { LayoutDashboard, BookOpen, Trophy, User, LogOut, LucideIcon, Menu, X, Shield } from 'lucide-react'
+import { LayoutDashboard, BookOpen, User, LogOut, LucideIcon, Menu, X, Shield, Home, GraduationCap, PlayCircle } from 'lucide-react'
 
 // Components
 import RequireAuth from './components/RequireAuth'
@@ -12,13 +12,15 @@ import Toasts from '@/components/Toast'
 
 // Core Pages (All imported eagerly to prevent Suspense/lazy issues)
 import Dashboard from './pages/Dashboard'
+import HomePage from './pages/Home'
 import Materials from './pages/Materials'
-import Leaderboard from './pages/Leaderboard'
 import Profile from './pages/Profile'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import NotFound from './pages/NotFound'
-import LessonView from './pages/LessonView'
+import CourseLanding from './pages/CourseLanding'
+import LearnPage from './pages/LearnPage'
+import MyLearning from './pages/MyLearning'
 import AdminLayout from './pages/admin/AdminLayout'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminUsers from './pages/admin/AdminUsers'
@@ -26,6 +28,11 @@ import AdminFiles from './pages/admin/AdminFiles'
 import AdminAuditLogs from './pages/admin/AdminAuditLogs'
 import AdminContent from './pages/admin/AdminContent'
 import AdminUserDetails from './pages/admin/AdminUserDetails'
+import InstructorLayout from './pages/instructor/InstructorLayout'
+import MyCourses from './pages/instructor/MyCourses'
+import InstructorAnalytics from './pages/instructor/InstructorAnalytics'
+import InstructorSettings from './pages/instructor/InstructorSettings'
+import CourseEdit from './pages/instructor/CourseEdit'
 
 // Hooks
 import { useAuth } from './auth/AuthContext'
@@ -123,7 +130,24 @@ export default function App() {
             <Route path="content" element={<RequireRole allowedRoles={['ADMIN','EDITOR']}><AdminContent /></RequireRole>} />
             <Route path="files" element={<RequireRole allowedRoles={['ADMIN']}><AdminFiles /></RequireRole>} />
             <Route path="audit" element={<RequireRole allowedRoles={['ADMIN']}><AdminAuditLogs /></RequireRole>} />
-            {/* <Route path="settings" element={<RequireRole allowedRoles={['ADMIN']}><AdminSettings /></RequireRole>} /> */}
+            <Route path="*" element={<NotFound />} />
+          </Route>
+        </Routes>
+        <Toasts />
+      </ErrorBoundary>
+    )
+  }
+
+  if (location.pathname.startsWith('/instructor')) {
+    return (
+      <ErrorBoundary>
+        <Routes>
+          <Route path="/instructor" element={<RequireAuth roles={['ADMIN', 'INSTRUCTOR' as any]}><InstructorLayout /></RequireAuth>}>
+            <Route index element={<MyCourses />} />
+            <Route path="courses" element={<MyCourses />} />
+            <Route path="courses/:id/edit" element={<CourseEdit />} />
+            <Route path="analytics" element={<InstructorAnalytics />} />
+            <Route path="settings" element={<InstructorSettings />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
@@ -153,12 +177,20 @@ export default function App() {
 
             {/* Desktop Nav */}
             <nav className="hidden md:flex items-center gap-1">
-              <NavItem to="/" icon={LayoutDashboard} label={t('nav.dashboard')} />
-              <NavItem to="/materials" icon={BookOpen} label={t('nav.materials')} />
-              <NavItem to="/leaderboard" icon={Trophy} label={t('nav.leaderboard')} />
-              <NavItem to="/profile" icon={User} label={t('nav.profile')} />
-              {user?.role && (user.role === 'ADMIN' || user.role === 'EDITOR') && (
-                <NavItem to="/admin" icon={Shield} label={t('nav.admin')} />
+              <NavItem to="/" icon={Home} label={t('nav.home')} />
+              {user && (
+                <>
+                  <NavItem to="/dashboard" icon={LayoutDashboard} label={t('nav.dashboard')} />
+                  <NavItem to="/my-courses" icon={PlayCircle} label="My Learning" />
+                  <NavItem to="/materials" icon={BookOpen} label={t('nav.materials')} />
+                  <NavItem to="/profile" icon={User} label={t('nav.profile')} />
+                  {user.role && (user.role === 'ADMIN' || (user.role as string) === 'INSTRUCTOR') && (
+                    <NavItem to="/instructor/courses" icon={GraduationCap} label="Instructor" />
+                  )}
+                  {user.role && (user.role === 'ADMIN' || user.role === 'EDITOR') && (
+                    <NavItem to="/admin" icon={Shield} label={t('nav.admin')} />
+                  )}
+                </>
               )}
             </nav>
 
@@ -207,12 +239,20 @@ export default function App() {
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 absolute w-full shadow-xl">
             <nav className="flex flex-col p-4 gap-2">
-              <NavItem to="/" icon={LayoutDashboard} label={t('nav.dashboard')} onClick={closeMobileMenu} />
-              <NavItem to="/materials" icon={BookOpen} label={t('nav.materials')} onClick={closeMobileMenu} />
-              <NavItem to="/leaderboard" icon={Trophy} label={t('nav.leaderboard')} onClick={closeMobileMenu} />
-              <NavItem to="/profile" icon={User} label={t('nav.profile')} onClick={closeMobileMenu} />
-              {user?.role && (user.role === 'ADMIN' || user.role === 'EDITOR') && (
-                <NavItem to="/admin" icon={Shield} label={t('nav.admin')} onClick={closeMobileMenu} />
+              <NavItem to="/" icon={Home} label={t('nav.home')} onClick={closeMobileMenu} />
+              {user && (
+                <>
+                  <NavItem to="/dashboard" icon={LayoutDashboard} label={t('nav.dashboard')} onClick={closeMobileMenu} />
+                  <NavItem to="/my-courses" icon={PlayCircle} label="My Learning" onClick={closeMobileMenu} />
+                  <NavItem to="/materials" icon={BookOpen} label={t('nav.materials')} onClick={closeMobileMenu} />
+                  <NavItem to="/profile" icon={User} label={t('nav.profile')} onClick={closeMobileMenu} />
+                  {user.role && (user.role === 'ADMIN' || (user.role as string) === 'INSTRUCTOR') && (
+                    <NavItem to="/instructor/courses" icon={GraduationCap} label="Instructor" onClick={closeMobileMenu} />
+                  )}
+                  {user.role && (user.role === 'ADMIN' || user.role === 'EDITOR') && (
+                    <NavItem to="/admin" icon={Shield} label={t('nav.admin')} onClick={closeMobileMenu} />
+                  )}
+                </>
               )}
               
               {!user && (
@@ -234,11 +274,13 @@ export default function App() {
       <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <ErrorBoundary>
           <Routes>
-            <Route path="/" element={<RequireAuth><Dashboard/></RequireAuth>} />
+            <Route path="/" element={<HomePage />} />
+            <Route path="/courses/:id" element={<CourseLanding />} />
+            <Route path="/learn/:id" element={<RequireAuth><LearnPage /></RequireAuth>} />
+            <Route path="/learn/:courseId/lecture/:lectureId" element={<RequireAuth><LearnPage /></RequireAuth>} />
+            <Route path="/my-courses" element={<RequireAuth><MyLearning /></RequireAuth>} />
             <Route path="/dashboard" element={<RequireAuth><Dashboard/></RequireAuth>} />
             <Route path="/materials" element={<RequireAuth><Materials/></RequireAuth>} />
-            <Route path="/lesson/:topicId/:lessonId" element={<RequireAuth><LessonView/></RequireAuth>} />
-            <Route path="/leaderboard" element={<RequireAuth><Leaderboard/></RequireAuth>} />
             <Route path="/profile" element={<RequireAuth><Profile/></RequireAuth>} />
             <Route path="*" element={<NotFound/>} />
           </Routes>
