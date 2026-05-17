@@ -106,10 +106,6 @@ export default function Profile() {
   const [passwordForm, setPasswordForm] = useState({ current: '', new: '', confirm: '' })
   const [passwordState, setPasswordState] = useState({ loading: false, error: null as string | null, success: false })
   
-  // Email form state
-  const [emailForm, setEmailForm] = useState({ email: '', password: '' })
-  const [emailState, setEmailState] = useState({ loading: false, error: null as string | null, success: false })
-  
   // Email verification state
   const [verificationState, setVerificationState] = useState({ loading: false, error: null as string | null, success: false })
   
@@ -230,27 +226,6 @@ export default function Profile() {
       setTimeout(() => setPasswordState(s => ({ ...s, success: false })), 3000)
     } catch (err: any) {
       setPasswordState({ loading: false, error: err.message || 'Failed', success: false })
-    }
-  }
-
-  const handleChangeEmail = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setEmailState({ loading: true, error: null, success: false })
-    
-    // Validate email format
-    if (!emailForm.email.toLowerCase().endsWith('@gmail.com')) {
-      setEmailState({ loading: false, error: t('auth.emailMustBeGmail', 'Email must end with @gmail.com'), success: false })
-      return
-    }
-
-    try {
-      await apiPut('/auth/email', { newEmail: emailForm.email, password: emailForm.password })
-      setEmailState({ loading: false, error: null, success: true })
-      setEmailForm({ email: '', password: '' })
-      await refresh()
-      setTimeout(() => setEmailState(s => ({ ...s, success: false })), 3000)
-    } catch (err: any) {
-      setEmailState({ loading: false, error: err.message || 'Failed', success: false })
     }
   }
 

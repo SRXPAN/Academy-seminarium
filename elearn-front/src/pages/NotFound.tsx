@@ -55,9 +55,6 @@ export default function NotFound() {
           <Link to="/materials" className="px-4 py-2 rounded-xl bg-neutral-50 dark:bg-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-700 text-sm font-medium transition-colors border border-neutral-100 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300">
             {t('nav.materials', 'Materials')}
           </Link>
-          <Link to="/leaderboard" className="px-4 py-2 rounded-xl bg-neutral-50 dark:bg-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-700 text-sm font-medium transition-colors border border-neutral-100 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300">
-            {t('nav.leaderboard', 'Leaderboard')}
-          </Link>
           <Link to="/profile" className="px-4 py-2 rounded-xl bg-neutral-50 dark:bg-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-700 text-sm font-medium transition-colors border border-neutral-100 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300">
             {t('nav.profile', 'Profile')}
           </Link>

@@ -1,12 +1,8 @@
 import { 
   BookOpen, 
-  Trophy, 
-  ClipboardList, 
   Search, 
   Inbox,
   TrendingUp,
-  FileText,
-  Lightbulb,
   type LucideIcon 
 } from 'lucide-react'
 import { useTranslation } from '@/i18n/useTranslation'
@@ -71,17 +67,17 @@ export function EmptyState({
           strokeWidth={1.5}
         />
       </div>
-      
+
       <h3 className={`font-display font-semibold text-neutral-900 dark:text-white mb-2 ${styles.title}`}>
         {title}
       </h3>
-      
+
       {description && (
         <p className={`text-neutral-500 dark:text-neutral-400 max-w-sm text-balance ${styles.description}`}>
           {description}
         </p>
       )}
-      
+
       {action && (
         <button
           onClick={action.onClick}
@@ -141,37 +137,6 @@ export function EmptySearch({
   )
 }
 
-export function EmptyLeaderboard({ className }: { className?: string }) {
-  const { t } = useTranslation()
-  return (
-    <EmptyState
-      icon={Trophy}
-      title={t('empty.leaderboard.title', 'Leaderboard is empty')}
-      description={t('empty.leaderboard.description', 'Be the first to earn some XP!')}
-      className={className}
-    />
-  )
-}
-
-export function EmptyQuizHistory({ 
-  onStartQuiz,
-  className 
-}: { 
-  onStartQuiz?: () => void
-  className?: string 
-}) {
-  const { t } = useTranslation()
-  return (
-    <EmptyState
-      icon={ClipboardList}
-      title={t('empty.quizHistory.title', 'No quizzes taken yet')}
-      description={t('empty.quizHistory.description', 'Challenge yourself by taking a quiz.')}
-      action={onStartQuiz ? { label: t('empty.quizHistory.action', 'Start Quiz'), onClick: onStartQuiz } : undefined}
-      className={className}
-    />
-  )
-}
-
 export function EmptyProgress({ 
   onStartLearning,
   className 
@@ -187,38 +152,6 @@ export function EmptyProgress({
       description={t('empty.progress.description', 'Start learning to see your stats here.')}
       action={onStartLearning ? { label: t('empty.progress.action', 'Start Learning'), onClick: onStartLearning } : undefined}
       className={className}
-    />
-  )
-}
-
-export function EmptyTopics({ 
-  onCreateTopic,
-  className 
-}: { 
-  onCreateTopic?: () => void
-  className?: string 
-}) {
-  const { t } = useTranslation()
-  return (
-    <EmptyState
-      icon={FileText}
-      title={t('empty.topics.title', 'No topics created')}
-      description={t('empty.topics.description', 'Create a new topic to get started.')}
-      action={onCreateTopic ? { label: t('empty.topics.action', 'Create Topic'), onClick: onCreateTopic } : undefined}
-      className={className}
-    />
-  )
-}
-
-export function EmptyRecommendations({ className }: { className?: string }) {
-  const { t } = useTranslation()
-  return (
-    <EmptyState
-      icon={Lightbulb}
-      title={t('empty.recommendations.title', 'No recommendations')}
-      description={t('empty.recommendations.description', 'Keep learning to get personalized advice.')}
-      className={className}
-      size="sm"
     />
   )
 }

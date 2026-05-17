@@ -9,10 +9,8 @@ import { apiGet } from '@/lib/http'
 import {
   Mail,
   Shield,
-  Trophy,
   Clock,
   FileText,
-  HelpCircle,
   ArrowLeft,
   CheckCircle,
   XCircle,
@@ -24,15 +22,11 @@ interface UserDetails {
   email: string
   name: string
   role: string
-  xp: number
   emailVerified: boolean
   createdAt: string
   updatedAt: string
   _count: {
-    answers: number
-    topicsCreated: number
     materialsCreated: number
-    quizzesCreated: number
   }
 }
 
@@ -102,31 +96,7 @@ export default function AdminUserDetails() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-          <div className="flex items-center gap-3">
-            <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-              <Trophy className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">XP</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{user.xp.toLocaleString()}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-          <div className="flex items-center gap-3">
-            <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-              <HelpCircle className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Quiz answers</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{user._count.answers}</p>
-            </div>
-          </div>
-        </div>
-
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-3">
             <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
@@ -170,18 +140,6 @@ export default function AdminUserDetails() {
             <dd className="mt-1 text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
               <Mail className="w-4 h-4" />
               {user.email}
-            </dd>
-          </div>
-          <div>
-            <dt className="text-sm text-gray-500 dark:text-gray-400">Topics created</dt>
-            <dd className="mt-1 text-sm font-medium text-gray-900 dark:text-white">
-              {user._count.topicsCreated}
-            </dd>
-          </div>
-          <div>
-            <dt className="text-sm text-gray-500 dark:text-gray-400">Quizzes created</dt>
-            <dd className="mt-1 text-sm font-medium text-gray-900 dark:text-white">
-              {user._count.quizzesCreated}
             </dd>
           </div>
           <div>

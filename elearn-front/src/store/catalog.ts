@@ -1,6 +1,5 @@
 import { create } from 'zustand'
 import { fetchCategories, fetchCourseById, fetchPublishedCourses, type CourseCategory, type CourseDetail, type CourseSummary } from '@/services/courses.service'
-import type { Lang } from '@packages/shared'
 
 type CatalogState = {
   // Marketplace state

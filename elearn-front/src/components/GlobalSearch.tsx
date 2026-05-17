@@ -4,8 +4,7 @@ import {
   Search, 
   X, 
   Loader2, 
-  PlayCircle,
-  BookOpen
+  PlayCircle
 } from 'lucide-react'
 import { useTranslation } from '@/i18n/useTranslation'
 import useCatalogStore from '@/store/catalog'

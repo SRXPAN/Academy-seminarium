@@ -18,7 +18,6 @@ import {
   AlertTriangle,
   Download,
   Eye,
-  Mail,
 } from 'lucide-react'
 import { Loading } from '@/components/Skeletons'
 import ConfirmDialog from '@/components/ConfirmDialog'
