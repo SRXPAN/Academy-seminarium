@@ -1,4 +1,4 @@
-// packages/shared/src/types/index.ts
+// elearn-backend/src/shared/types/index.ts
 export function getTranslation(json, lang, fallback = '') {
     if (!json)
         return fallback;

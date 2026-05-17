@@ -1,28 +1,34 @@
-// src/components/GlobalSearch.tsx
-import { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Search, X, BookOpen, Trophy, FileText, Loader2 } from 'lucide-react'
-import useCatalogStore from '@/store/catalog'
+import { 
+  Search, 
+  X, 
+  Loader2, 
+  PlayCircle,
+  BookOpen
+} from 'lucide-react'
 import { useTranslation } from '@/i18n/useTranslation'
+import useCatalogStore from '@/store/catalog'
 
 interface SearchResult {
   id: string
-  type: 'topic' | 'quiz' | 'lesson'
+  type: 'course'
   title: string
   description?: string
   url: string
 }
 
-export default function GlobalSearch() {
-  const { t } = useTranslation()
-  const [isOpen, setIsOpen] = useState(false)
+export default function GlobalSearch({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (open: boolean) => void }) {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<SearchResult[]>([])
   const [loading, setLoading] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
   const navigate = useNavigate()
-  const { topics } = useCatalogStore()
+  const { t } = useTranslation()
+  
+  // Courses from store
+  const { courses } = useCatalogStore()
 
   // Search logic
   const performSearch = useCallback((searchQuery: string) => {
@@ -35,39 +41,24 @@ export default function GlobalSearch() {
     const q = searchQuery.toLowerCase()
     const searchResults: SearchResult[] = []
 
-    // Search through topics (defensive: ensure topics is array)
-    const safeTopics = Array.isArray(topics) ? topics : []
-    safeTopics.forEach(topic => {
-      if (topic.name.toLowerCase().includes(q)) {
+    // Search through courses
+    courses.forEach(course => {
+      if (course.title.toLowerCase().includes(q) || course.description.toLowerCase().includes(q)) {
         searchResults.push({
-          id: topic.id,
-          type: 'topic',
-          title: topic.name,
-          description: `${t('search.topicWith', 'Topic with')} ${topic.quizzes.length} ${t('search.quizzes', 'quizzes')}`,
-          url: `/materials` // Можна змінити на конкретний URL топіка, якщо є
+          id: course.id,
+          type: 'course',
+          title: course.title,
+          description: course.subtitle || course.description.slice(0, 60) + '...',
+          url: `/courses/${course.id}`
         })
       }
-
-      // Search through quizzes (defensive: ensure quizzes is array)
-      const safeQuizzes = Array.isArray(topic.quizzes) ? topic.quizzes : []
-      safeQuizzes.forEach((quiz: { id: string; title: string; durationSec: number }) => {
-        if (quiz.title.toLowerCase().includes(q)) {
-          searchResults.push({
-            id: quiz.id,
-            type: 'quiz',
-            title: quiz.title,
-            description: `${quiz.durationSec} ${t('common.seconds', 'sec')}`,
-            url: `/quiz` // Можна додати ID квіза в URL
-          })
-        }
-      })
     })
 
     // Limit results
     setResults(searchResults.slice(0, 10))
     setLoading(false)
     setSelectedIndex(0)
-  }, [topics, t])
+  }, [courses])
 
   // Debounced search
   useEffect(() => {
@@ -90,7 +81,7 @@ export default function GlobalSearch() {
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [])
+  }, [setIsOpen])
 
   // Auto-focus input
   useEffect(() => {
@@ -118,12 +109,8 @@ export default function GlobalSearch() {
     }
   }
 
-  const getIcon = (type: SearchResult['type']) => {
-    switch (type) {
-      case 'topic': return <BookOpen size={18} />
-      case 'quiz': return <Trophy size={18} />
-      case 'lesson': return <FileText size={18} />
-    }
+  const getIcon = (_type: SearchResult['type']) => {
+    return <PlayCircle size={18} />
   }
 
   return (
@@ -168,7 +155,7 @@ export default function GlobalSearch() {
                 value={query}
                 onChange={e => setQuery(e.target.value)}
                 onKeyDown={handleInputKeyDown}
-                placeholder={t('search.fullPlaceholder', 'Search topics, quizzes, lessons...')}
+                placeholder={t('search.fullPlaceholder', 'Search courses...')}
                 className="flex-1 bg-transparent outline-none text-neutral-900 dark:text-white placeholder-neutral-400 h-10"
               />
               {loading ? (
@@ -198,13 +185,7 @@ export default function GlobalSearch() {
                             : 'hover:bg-neutral-50 dark:hover:bg-neutral-800'
                         }`}
                       >
-                        <div className={`p-2.5 rounded-xl shrink-0 ${
-                          result.type === 'quiz' 
-                            ? 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400'
-                            : result.type === 'topic'
-                            ? 'bg-primary-100 text-primary-600 dark:bg-primary-900/30 dark:text-primary-400'
-                            : 'bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400'
-                        }`}>
+                        <div className="p-2.5 rounded-xl shrink-0 bg-primary-100 text-primary-600 dark:bg-primary-900/30 dark:text-primary-400">
                           {getIcon(result.type)}
                         </div>
                         <div className="flex-1 min-w-0">

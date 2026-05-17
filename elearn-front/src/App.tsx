@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 import { Routes, Route, NavLink, useNavigate, useLocation } from 'react-router-dom'
-import { LayoutDashboard, BookOpen, User, LogOut, LucideIcon, Menu, X, Shield, Home, GraduationCap, PlayCircle } from 'lucide-react'
+import { LayoutDashboard, User, LogOut, LucideIcon, Menu, X, Shield, Home, GraduationCap, PlayCircle } from 'lucide-react'
 
 // Components
 import RequireAuth from './components/RequireAuth'
@@ -13,7 +13,6 @@ import Toasts from '@/components/Toast'
 // Core Pages (All imported eagerly to prevent Suspense/lazy issues)
 import Dashboard from './pages/Dashboard'
 import HomePage from './pages/Home'
-import Materials from './pages/Materials'
 import Profile from './pages/Profile'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -26,7 +25,6 @@ import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminUsers from './pages/admin/AdminUsers'
 import AdminFiles from './pages/admin/AdminFiles'
 import AdminAuditLogs from './pages/admin/AdminAuditLogs'
-import AdminContent from './pages/admin/AdminContent'
 import AdminUserDetails from './pages/admin/AdminUserDetails'
 import InstructorLayout from './pages/instructor/InstructorLayout'
 import MyCourses from './pages/instructor/MyCourses'
@@ -127,7 +125,6 @@ export default function App() {
             <Route index element={<AdminDashboard />} />
             <Route path="users" element={<RequireRole allowedRoles={['ADMIN']}><AdminUsers /></RequireRole>} />
             <Route path="users/:id" element={<RequireRole allowedRoles={['ADMIN']}><AdminUserDetails /></RequireRole>} />
-            <Route path="content" element={<RequireRole allowedRoles={['ADMIN','EDITOR']}><AdminContent /></RequireRole>} />
             <Route path="files" element={<RequireRole allowedRoles={['ADMIN']}><AdminFiles /></RequireRole>} />
             <Route path="audit" element={<RequireRole allowedRoles={['ADMIN']}><AdminAuditLogs /></RequireRole>} />
             <Route path="*" element={<NotFound />} />
@@ -182,7 +179,6 @@ export default function App() {
                 <>
                   <NavItem to="/dashboard" icon={LayoutDashboard} label={t('nav.dashboard')} />
                   <NavItem to="/my-courses" icon={PlayCircle} label="My Learning" />
-                  <NavItem to="/materials" icon={BookOpen} label={t('nav.materials')} />
                   <NavItem to="/profile" icon={User} label={t('nav.profile')} />
                   {user.role && (user.role === 'ADMIN' || (user.role as string) === 'INSTRUCTOR') && (
                     <NavItem to="/instructor/courses" icon={GraduationCap} label="Instructor" />
@@ -244,7 +240,6 @@ export default function App() {
                 <>
                   <NavItem to="/dashboard" icon={LayoutDashboard} label={t('nav.dashboard')} onClick={closeMobileMenu} />
                   <NavItem to="/my-courses" icon={PlayCircle} label="My Learning" onClick={closeMobileMenu} />
-                  <NavItem to="/materials" icon={BookOpen} label={t('nav.materials')} onClick={closeMobileMenu} />
                   <NavItem to="/profile" icon={User} label={t('nav.profile')} onClick={closeMobileMenu} />
                   {user.role && (user.role === 'ADMIN' || (user.role as string) === 'INSTRUCTOR') && (
                     <NavItem to="/instructor/courses" icon={GraduationCap} label="Instructor" onClick={closeMobileMenu} />
@@ -280,7 +275,6 @@ export default function App() {
             <Route path="/learn/:courseId/lecture/:lectureId" element={<RequireAuth><LearnPage /></RequireAuth>} />
             <Route path="/my-courses" element={<RequireAuth><MyLearning /></RequireAuth>} />
             <Route path="/dashboard" element={<RequireAuth><Dashboard/></RequireAuth>} />
-            <Route path="/materials" element={<RequireAuth><Materials/></RequireAuth>} />
             <Route path="/profile" element={<RequireAuth><Profile/></RequireAuth>} />
             <Route path="*" element={<NotFound/>} />
           </Routes>

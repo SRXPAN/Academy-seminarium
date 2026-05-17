@@ -2,10 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { api, apiPut, apiDelete } from '@/lib/http'
 import type { 
   User, 
-  Role, 
-  Category, 
-  Status,
-  LocalizedString
+  Role
 } from '@packages/shared'
 
 // ============================================
@@ -16,7 +13,6 @@ function useAbortController() {
   const controllerRef = useRef<AbortController | null>(null)
 
   const getSignal = useCallback(() => {
-    // Abort previous request if exists
     if (controllerRef.current) {
       controllerRef.current.abort()
     }
@@ -40,14 +36,8 @@ function useAbortController() {
 // ============================================
 
 export interface AdminUser extends User {
-  emailVerified: boolean
   createdAt: string
   updatedAt: string
-  _count?: {
-    answers: number
-    topicsCreated: number
-    materialsCreated: number
-  }
 }
 
 export interface AuditLog {
@@ -83,18 +73,10 @@ export interface SystemStats {
     byRole: Record<string, number>
   }
   content: {
-    topics: number
-    materials: number
-    quizzes: number
-    questions: number
+    courses: number
+    sections: number
+    lectures: number
     files: number
-  }
-  activity: {
-    last7days: Record<string, {
-      timeSpent: number
-      quizAttempts: number
-      materialsViewed: number
-    }>
   }
 }
 
@@ -125,7 +107,6 @@ export function useAdminUsers(initialPage = 1, initialLimit = 20) {
       if (params?.search) query.set('search', params.search)
 
       const res = await api<{ users: AdminUser[], pagination: { page: number, limit: number, total: number, pages: number } }>(`/admin/users?${query}`, { signal: getSignal() })
-      // Backend returns { users, pagination } not { data, pagination }
       setUsers(res.users || [])
       setPagination(res.pagination)
     } catch (err) {
@@ -156,21 +137,11 @@ export function useAdminUsers(initialPage = 1, initialLimit = 20) {
     }
   }, [fetchUsers, pagination])
 
-  const verifyUser = useCallback(async (userId: string) => {
-    try {
-      await apiPut(`/admin/users/${userId}/verify`, {})
-      fetchUsers({ page: pagination.page, limit: pagination.limit })
-      return true
-    } catch {
-      return false
-    }
-  }, [fetchUsers, pagination])
-
   useEffect(() => {
     fetchUsers({ page: initialPage, limit: initialLimit })
   }, [])
 
-  return { users, pagination, loading, error, fetchUsers, updateRole, deleteUser, verifyUser }
+  return { users, pagination, loading, error, fetchUsers, updateRole, deleteUser }
 }
 
 // ============================================
@@ -249,86 +220,4 @@ export function useAdminStats() {
   }, [fetchStats])
 
   return { stats, loading, error, refresh: fetchStats }
-}
-
-// ============================================
-// CONTENT MANAGEMENT HOOK
-// ============================================
-
-export interface AdminTopic {
-  id: string
-  name: string
-  nameJson?: LocalizedString
-  slug: string
-  description: string
-  descJson?: LocalizedString
-  category: Category
-  status: Status
-  parentId: string | null
-  publishedAt?: string | null
-  materials?: Array<{
-    id: string
-    title: string
-    titleJson?: LocalizedString
-    type: 'pdf' | 'video' | 'link' | 'text'
-    url?: string
-    urlJson?: LocalizedString
-    content?: string
-    contentJson?: LocalizedString
-    status: string
-    lang?: string
-    createdAt: string
-    updatedAt: string
-    isSeen?: boolean
-  }>
-  quizzes?: Array<{
-    id: string
-    title: string
-    durationSec: number
-    status: string
-    createdAt: string
-  }>
-  children?: AdminTopic[]
-  _count?: {
-    materials: number
-    quizzes: number
-    children: number
-  }
-}
-
-export function useAdminContent() {
-  const [topics, setTopics] = useState<AdminTopic[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const { getSignal } = useAbortController()
-
-  const fetchTopics = useCallback(async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const res = await api<{ topics: AdminTopic[] }>('/admin/content/topics', { signal: getSignal() })
-      setTopics(res.topics)
-    } catch (err) {
-      if (err instanceof Error && err.name === 'AbortError') return
-      setError(err instanceof Error ? err.message : 'Failed to load topics')
-    } finally {
-      setLoading(false)
-    }
-  }, [getSignal])
-
-  const deleteTopic = useCallback(async (id: string) => {
-    try {
-      await apiDelete(`/admin/content/topics/${id}`)
-      await fetchTopics()
-      return true
-    } catch {
-      return false
-    }
-  }, [fetchTopics])
-
-  useEffect(() => {
-    fetchTopics()
-  }, [])
-
-  return { topics, loading, error, fetchTopics, deleteTopic }
 }

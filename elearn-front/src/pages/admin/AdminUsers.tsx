@@ -25,12 +25,12 @@ import ConfirmDialog from '@/components/ConfirmDialog'
 import { Pagination } from '@/components/admin/Pagination'
 import { PageHeader } from '@/components/admin/PageHeader'
 
-const ROLES = ['STUDENT', 'EDITOR', 'ADMIN'] as const
+const ROLES = ['STUDENT', 'INSTRUCTOR', 'ADMIN'] as const
 type Role = (typeof ROLES)[number]
 
 const roleColors: Record<Role, string> = {
   STUDENT: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
-  EDITOR: 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300',
+  INSTRUCTOR: 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300',
   ADMIN: 'bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300',
 }
 
@@ -45,7 +45,6 @@ export default function AdminUsers() {
     fetchUsers,
     updateRole,
     deleteUser,
-    verifyUser,
   } = useAdminUsers()
   
   // Stub functions for features not yet implemented
@@ -133,12 +132,11 @@ export default function AdminUsers() {
   const handleExportUsers = () => {
     if (!users) return
     const csv = [
-      ['Name', 'Email', 'Role', 'XP', 'Email Verified', 'Created At'].join(','),
+      ['Name', 'Email', 'Role', 'Email Verified', 'Created At'].join(','),
       ...users.map(u => [
         u.name,
         u.email,
         u.role,
-        u.xp,
         u.emailVerified ? 'Yes' : 'No',
         new Date(u.createdAt).toLocaleDateString()
       ].join(','))
@@ -151,13 +149,6 @@ export default function AdminUsers() {
     a.download = `users-export-${new Date().toISOString().slice(0, 10)}.csv`
     a.click()
     URL.revokeObjectURL(url)
-  }
-
-  const handleVerify = async (userId: string) => {
-    const ok = await verifyUser(userId)
-    if (!ok) {
-      setValidationError(t('admin.error.verifyFailed'))
-    }
   }
 
   if (loading && (!users || users.length === 0)) {
@@ -245,7 +236,7 @@ export default function AdminUsers() {
       {/* Users Table - Mobile responsive with horizontal scroll */}
       <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-max">
+          <table className="w-full min-max">
             <thead className="bg-gray-50 dark:bg-gray-700 sticky top-0">
               <tr>
                 <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap">
@@ -253,9 +244,6 @@ export default function AdminUsers() {
                 </th>
                 <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap">
                   {t('common.role')}
-                </th>
-                <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap">
-                  XP
                 </th>
                 <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap">
                   {t('common.status')}
@@ -317,9 +305,6 @@ export default function AdminUsers() {
                         <span className="sm:hidden">{user.role.slice(0, 3)}</span>
                       </span>
                     )}
-                  </td>
-                  <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm text-gray-900 dark:text-white whitespace-nowrap">
-                    {user.xp.toLocaleString()}
                   </td>
                   <td className="px-3 sm:px-6 py-3 sm:py-4">
                     {user.emailVerified ? (
@@ -418,9 +403,6 @@ export default function AdminUsers() {
                   onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
                 />
-                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                  {t('admin.passwordRequirements')}
-                </p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -464,7 +446,7 @@ export default function AdminUsers() {
           isOpen={!!roleChangeConfirm}
           title={t('admin.changeRole')}
           description={`${roleChangeConfirm.userName} → ${roleChangeConfirm.newRole}`}
-          confirmText={t('common.delete')}
+          confirmText={t('common.confirm')}
           cancelText={t('common.cancel')}
           onConfirm={confirmRoleChange}
           onClose={() => {
@@ -531,13 +513,6 @@ export default function AdminUsers() {
                 </div>
 
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">XP</h3>
-                  <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                    {viewingUser.xp.toLocaleString()}
-                  </p>
-                </div>
-
-                <div>
                   <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
                     {t('common.status')}
                   </h3>
@@ -571,37 +546,6 @@ export default function AdminUsers() {
                     {new Date(viewingUser.updatedAt).toLocaleString()}
                   </p>
                 </div>
-
-                {viewingUser._count && (
-                  <>
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
-                        {t('admin.answersCount')}
-                      </h3>
-                      <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                        {viewingUser._count.answers}
-                      </p>
-                    </div>
-
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
-                        {t('admin.topicsCreated')}
-                      </h3>
-                      <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                        {viewingUser._count.topicsCreated}
-                      </p>
-                    </div>
-
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
-                        {t('admin.materialsCreated')}
-                      </h3>
-                      <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                        {viewingUser._count.materialsCreated}
-                      </p>
-                    </div>
-                  </>
-                )}
               </div>
 
               {/* Розділ редагування ролі */}
@@ -640,25 +584,6 @@ export default function AdminUsers() {
                   </button>
                 )}
               </div>
-
-              {/* Розділ верифікації */}
-              {!viewingUser.emailVerified && (
-                <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">
-                    {t('admin.sendVerificationEmail')}
-                  </h3>
-                  <button
-                    onClick={() => {
-                      handleVerify(viewingUser.id)
-                      setViewingUser(null)
-                    }}
-                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2"
-                  >
-                    <Mail className="w-4 h-4" />
-                    {t('admin.sendVerificationEmail')}
-                  </button>
-                </div>
-              )}
 
               {/* Розділ видалення */}
               <div className="border-t border-gray-200 dark:border-gray-700 pt-6">

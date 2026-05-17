@@ -2,10 +2,8 @@ import { useAdminStats } from '@/hooks/useAdmin'
 import { useTranslation } from '@/i18n/useTranslation'
 import {
   Users,
-  BookOpen,
-  FileQuestion,
+  PlayCircle,
   FolderOpen,
-  TrendingUp,
   Activity,
   AlertCircle
 } from 'lucide-react'
@@ -50,15 +48,15 @@ export default function AdminDashboard() {
       color: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
     },
     {
-      label: t('admin.totalTopics', 'Total Topics'),
-      value: stats.content?.topics ?? 0,
-      icon: BookOpen,
+      label: 'Total Courses',
+      value: stats.content?.courses ?? 0,
+      icon: PlayCircle,
       color: 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400',
     },
     {
-      label: t('admin.totalMaterials', 'Total Materials'),
-      value: stats.content?.materials ?? 0,
-      icon: FileQuestion,
+      label: 'Total Lectures',
+      value: stats.content?.lectures ?? 0,
+      icon: PlayCircle,
       color: 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400',
     },
     {
@@ -111,54 +109,6 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid lg:grid-cols-2 gap-8">
-        {/* Activity Chart (Table view for MVP) */}
-        <div className="card h-full">
-          <div className="flex items-center gap-2 mb-6">
-            <div className="p-2 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg text-indigo-600 dark:text-indigo-400">
-              <TrendingUp size={20} />
-            </div>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white">
-              {t('admin.recentActivity', 'Recent Activity')}
-            </h2>
-          </div>
-          
-          {stats.activity?.last7days && Object.keys(stats.activity.last7days).length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="text-left text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-gray-800">
-                    <th className="pb-3 font-medium pl-2">{t('common.date', 'Date')}</th>
-                    <th className="pb-3 font-medium text-right">{t('admin.timeSpent', 'Time')}</th>
-                    <th className="pb-3 font-medium text-right">{t('admin.quizAttempts', 'Quizzes')}</th>
-                    <th className="pb-3 font-medium text-right pr-2">{t('admin.materialsViewed', 'Materials')}</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                  {Object.entries(stats.activity.last7days).map(([date, data]) => (
-                    <tr key={date} className="group hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                      <td className="py-3 pl-2 font-medium text-gray-900 dark:text-white">{date}</td>
-                      <td className="py-3 text-right text-gray-600 dark:text-gray-400">
-                        {Math.round(data.timeSpent / 60)} {t('common.minutes', 'min')}
-                      </td>
-                      <td className="py-3 text-right text-gray-600 dark:text-gray-400">
-                        {data.quizAttempts}
-                      </td>
-                      <td className="py-3 text-right pr-2 text-gray-600 dark:text-gray-400">
-                        {data.materialsViewed}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center h-48 text-gray-400">
-              <Activity size={32} className="mb-2 opacity-20" />
-              <p>{t('admin.noActivityData', 'No activity data available')}</p>
-            </div>
-          )}
-        </div>
-
         {/* Users by Role */}
         <div className="card h-full">
           <div className="flex items-center gap-2 mb-6">
@@ -189,7 +139,7 @@ export default function AdminDashboard() {
                       <div 
                         className={`h-full rounded-full ${
                           role === 'ADMIN' ? 'bg-purple-500' : 
-                          role === 'EDITOR' ? 'bg-blue-500' : 'bg-green-500'
+                          role === 'INSTRUCTOR' ? 'bg-blue-500' : 'bg-green-500'
                         }`}
                         style={{ width: `${percentage}%` }}
                       />
@@ -200,7 +150,7 @@ export default function AdminDashboard() {
             </div>
           ) : (
             <div className="text-center py-12 text-gray-500">
-              {t('admin.noActivityData', 'No data')}
+              No data
             </div>
           )}
         </div>

@@ -17,18 +17,6 @@ export function CardSkeleton() {
   )
 }
 
-/** Скелетон для картки квіза */
-export function QuizCardSkeleton() {
-  return (
-    <div className="p-4 rounded-2xl border-2 border-neutral-200 dark:border-neutral-700 space-y-3">
-      <div className="flex justify-between items-center">
-        <Skeleton variant="text" width="70%" />
-        <Skeleton variant="text" width={40} />
-      </div>
-    </div>
-  )
-}
-
 /** Скелетон картки дашборда з іконкою */
 export function DashboardCardSkeleton() {
   return (
@@ -129,17 +117,6 @@ export function SkeletonAvatar({ size = 40, showName = true, className = '' }: {
 // Page Specific Skeletons
 // ========================================
 
-/** Скелетон для сітки карток матеріалів (6 карток) */
-export function MaterialsGridSkeleton({ count = 6 }: { count?: number }) {
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {Array.from({ length: count }).map((_, i) => (
-        <CardSkeleton key={i} />
-      ))}
-    </div>
-  )
-}
-
 /** Повний скелетон для Dashboard */
 export function SkeletonDashboard() {
   return (
@@ -167,73 +144,13 @@ export function SkeletonDashboard() {
       {/* Main Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          {/* Chart area placeholder */}
-          <div className="card h-64 p-6 flex items-end gap-2">
-             {Array.from({ length: 12 }).map((_, i) => (
-                <Skeleton key={i} variant="rounded" width="100%" height={`${Math.random() * 80 + 20}%`} />
-             ))}
-          </div>
+          {/* Placeholder for content */}
+          <div className="card h-64 p-6" />
           <SkeletonList count={3} />
         </div>
 
         <div className="space-y-6">
-           <div className="card p-6 space-y-4">
-              <Skeleton variant="text" height={20} width="60%" />
-              <div className="grid grid-cols-5 gap-2">
-                 {Array.from({ length: 25 }).map((_, i) => (
-                    <Skeleton key={i} variant="rounded" className="aspect-square" />
-                 ))}
-              </div>
-           </div>
            <SkeletonList count={4} />
-        </div>
-      </div>
-    </div>
-  )
-}
-
-/** Скелетон для сторінки матеріалу/уроку */
-export function SkeletonMaterial() {
-  return (
-    <div className="max-w-4xl mx-auto space-y-6 animate-pulse">
-      {/* Breadcrumb */}
-      <div className="flex gap-2">
-        <Skeleton variant="text" height={14} width={60} />
-        <Skeleton variant="text" height={14} width={100} />
-        <Skeleton variant="text" height={14} width={120} />
-      </div>
-
-      <Skeleton variant="text" height={36} width="70%" />
-
-      <div className="flex gap-4">
-        <Skeleton variant="rounded" height={24} width={100} />
-        <Skeleton variant="rounded" height={24} width={80} />
-      </div>
-
-      <div className="card p-8 space-y-6">
-        <SkeletonText lines={3} />
-        <Skeleton variant="rounded" height={240} />
-        <SkeletonText lines={5} />
-      </div>
-    </div>
-  )
-}
-
-/** Скелетон для сторінки проходження квізу */
-export function SkeletonQuiz() {
-  return (
-    <div className="max-w-2xl mx-auto space-y-6 animate-pulse">
-      <div className="flex items-center gap-4">
-        <Skeleton variant="rounded" height={8} className="flex-1" />
-        <Skeleton variant="text" height={14} width={60} />
-      </div>
-
-      <div className="card p-6">
-        <Skeleton variant="text" height={24} width="90%" className="mb-6" />
-        <div className="space-y-3">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} variant="rounded" height={56} className="w-full" />
-          ))}
         </div>
       </div>
     </div>

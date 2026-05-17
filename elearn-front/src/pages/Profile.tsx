@@ -79,10 +79,7 @@ function ProfileHeader({ user, onUpload, onDeleteAvatar, uploading }: { user: an
         <p className="text-neutral-500 dark:text-neutral-400 font-medium">{user.email}</p>
         <div className="flex items-center gap-3 justify-center sm:justify-start mt-2">
           <span className="px-3 py-1 rounded-full bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-xs font-bold uppercase tracking-wider">
-            {t('profile.xp', 'XP')}: {user.xp}
-          </span>
-          <span className="px-3 py-1 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 text-xs font-bold uppercase tracking-wider">
-            Lvl {Math.floor(user.xp / 100) + 1}
+            {user.role}
           </span>
         </div>
       </div>
@@ -270,19 +267,6 @@ export default function Profile() {
     }
   }
 
-  // All 9 badges matching backend gamification.ts
-  const badges = [
-    { id: 'first_steps', title: t('badge.firstSteps', 'First Steps'), cond: user.xp >= 10, icon: '⭐' },
-    { id: 'rising_star', title: t('badge.risingStar', 'Rising Star'), cond: user.xp >= 50, icon: '🔥' },
-    { id: 'dedicated_learner', title: t('badge.dedicatedLearner', 'Dedicated Learner'), cond: user.xp >= 100, icon: '📚' },
-    { id: 'bookworm', title: t('badge.bookworm', 'Bookworm'), cond: user.xp >= 200, icon: '🐛' },
-    { id: 'quiz_master', title: t('badge.quizMaster', 'Quiz Master'), cond: user.xp >= 350, icon: '🎯' },
-    { id: 'scholar', title: t('badge.scholar', 'Scholar'), cond: user.xp >= 500, icon: '🎓' },
-    { id: 'expert', title: t('badge.expert', 'Expert'), cond: user.xp >= 750, icon: '🏆' },
-    { id: 'guru', title: t('badge.guru', 'Guru'), cond: user.xp >= 1000, icon: '👑' },
-    { id: 'legend', title: t('badge.legend', 'Legend'), cond: user.xp >= 1500, icon: '🌟' },
-  ]
-
   return (
     <div className="space-y-6 max-w-4xl mx-auto pb-12 animate-in fade-in duration-500">
       
@@ -296,32 +280,6 @@ export default function Profile() {
             onDeleteAvatar={handleRemoveAvatar} 
             uploading={avatarLoading} 
           />
-          
-          <div className="border-t border-neutral-100 dark:border-neutral-800 pt-6">
-            <h4 className="text-sm font-semibold text-neutral-500 uppercase tracking-wider mb-4">
-              {t('profile.badges', 'Achievements')} ({badges.filter(b => b.cond).length}/{badges.length})
-            </h4>
-            <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-2">
-              {badges.map(b => (
-                <div 
-                  key={b.id} 
-                  className={`flex flex-col items-center gap-1 p-2 rounded-xl text-center transition-all ${
-                    b.cond
-                      ? 'bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-800'
-                      : 'bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 grayscale opacity-50'
-                  }`}
-                  title={b.title}
-                >
-                  <span className="text-2xl">{b.cond ? b.icon : '🔒'}</span>
-                  <span className={`text-[10px] font-medium leading-tight line-clamp-2 ${
-                    b.cond ? 'text-amber-800 dark:text-amber-200' : 'text-neutral-400 dark:text-neutral-500'
-                  }`}>
-                    {b.title}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       </section>
 
@@ -420,62 +378,6 @@ export default function Profile() {
                 </div>
               )}
             </div>
-            
-            {/* Change Email Form - Only if verified */}
-            {(user as any)?.emailVerified && (
-              <div className="border-t border-neutral-100 dark:border-neutral-800 pt-6">
-                <h4 className="text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-4">
-                  {t('profile.action.changeEmail', 'Change Email')}
-                </h4>
-                <form onSubmit={handleChangeEmail} className="space-y-4">
-                  <input type="text" autoComplete="username" value={user?.email || ''} readOnly className="hidden" />
-                  <div>
-                    <label className="block text-xs sm:text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
-                      {t('profile.label.newEmail', 'New Email')}
-                    </label>
-                    <input
-                      type="email"
-                      value={emailForm.email}
-                      onChange={e => setEmailForm(s => ({...s, email: e.target.value}))}
-                      placeholder={t('profile.placeholder.newEmail', 'Enter new email')}
-                      className="w-full rounded-xl border px-3 py-2.5 bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all outline-none text-sm"
-                      autoComplete="email"
-                      required
-                    />
-                    <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-2">{t('auth.emailMustBeGmail', 'Email must end with @gmail.com')}</p>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-xs sm:text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
-                      {t('profile.label.currentPassword', 'Current Password')}
-                    </label>
-                    <PasswordInput
-                      value={emailForm.password}
-                      onChange={e => setEmailForm(s => ({...s, password: e.target.value}))}
-                      placeholder={t('profile.label.currentPassword', 'Current Password')}
-                      autoComplete="current-password"
-                      required
-                    />
-                  </div>
-                  
-                  {emailState.error && (
-                    <p className="text-xs text-red-500 bg-red-50 dark:bg-red-900/20 p-2.5 rounded-lg">{emailState.error}</p>
-                  )}
-                  {emailState.success && (
-                    <p className="text-xs text-green-500 bg-green-50 dark:bg-green-900/20 p-2.5 rounded-lg">{t('profile.success.emailChanged', 'Email changed!')}</p>
-                  )}
-
-                  <LoadingButton 
-                    type="submit" 
-                    loading={emailState.loading}
-                    className="w-full min-h-[44px] sm:min-h-[40px]"
-                    disabled={!emailForm.email || !emailForm.password}
-                  >
-                    {t('profile.action.changeEmail', 'Change Email')}
-                  </LoadingButton>
-                </form>
-              </div>
-            )}
           </section>
           
           {/* Preferences Card */}
@@ -589,7 +491,7 @@ export default function Profile() {
         
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400">
-            {t('profile.deleteAccountWarning', 'Deleting your account is irreversible. All your progress, badges and settings will be permanently lost.')}
+            {t('profile.deleteAccountWarning', 'Deleting your account is irreversible. All your progress and settings will be permanently lost.')}
           </p>
           <button
             onClick={() => setShowDeleteDialog(true)}

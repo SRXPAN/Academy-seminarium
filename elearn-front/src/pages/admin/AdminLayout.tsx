@@ -8,10 +8,8 @@ import {
   FolderOpen,
   ChevronRight,
   LogOut,
-  BookOpen,
   Menu,
   X,
-  Trophy,
   User,
   LayoutDashboard
 } from 'lucide-react'
@@ -32,7 +30,6 @@ type NavItem = {
 const navItems: NavItem[] = [
   { path: '/admin', icon: BarChart3, labelKey: 'admin.dashboard', end: true, roles: ['ADMIN', 'EDITOR'] },
   { path: '/admin/users', icon: Users, labelKey: 'admin.users', roles: ['ADMIN'] },
-  { path: '/admin/content', icon: BookOpen, labelKey: 'admin.content', roles: ['ADMIN', 'EDITOR'] },
   { path: '/admin/files', icon: FolderOpen, labelKey: 'admin.files', roles: ['ADMIN'] },
   { path: '/admin/audit', icon: Activity, labelKey: 'admin.auditLogs', roles: ['ADMIN'] },
 ]
@@ -110,20 +107,6 @@ export default function AdminLayout() {
             >
               <LayoutDashboard className="w-4 h-4" />
               <span>{t('nav.dashboard', 'Dashboard')}</span>
-            </Link>
-            <Link
-              to="/materials"
-              className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800/50 transition-colors"
-            >
-              <BookOpen className="w-4 h-4" />
-              <span>{t('nav.materials', 'Materials')}</span>
-            </Link>
-            <Link
-              to="/leaderboard"
-              className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800/50 transition-colors"
-            >
-              <Trophy className="w-4 h-4" />
-              <span>{t('nav.leaderboard', 'Leaderboard')}</span>
             </Link>
             <Link
               to="/profile"

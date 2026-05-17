@@ -1,5 +1,7 @@
 import { apiGet, apiPost } from '@/lib/http'
-import type { Category, Lang, LocalizedString, User } from '@packages/shared'
+import type { Lang, LocalizedString, User } from '@packages/shared'
+
+export type Category = 'Programming' | 'Mathematics' | 'Databases' | 'Networks' | 'WebDevelopment' | 'MobileDevelopment' | 'MachineLearning' | 'Security' | 'DevOps' | 'OperatingSystems' | string
 
 export type CourseStatus = 'DRAFT' | 'PUBLISHED'
 export type InstructorCourseStatus = 'DRAFT' | 'PENDING' | 'PUBLISHED'
